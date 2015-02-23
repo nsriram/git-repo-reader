@@ -16,24 +16,40 @@
     var indexUpto = someDirectoryName.indexOf('.git/HEAD');
     return someDirectoryName.substring(0, indexUpto);
   }
+
+  function filterFiles(someFiles, filterCriteria) {
+    return someFiles.filter(function (someFile) {
+      return someFile.webkitRelativePath.indexOf(filterCriteria) > -1;
+    });
+  }
+
   $("#myfiles").on('change', function () {
       var fileInput = document.querySelector("#myfiles");
       var someFiles = [].slice.call(fileInput.files);
-      var head = someFiles.filter(function (someFile) {
-        return someFile.webkitRelativePath.indexOf('.git/HEAD') > -1;
-      });
-
+      var head = filterFiles(someFiles, '.git/HEAD');
       if (head.length !== 1) {
         alert('Not a Git Directory');
         return;
       }
       var baseDirectory = getBaseDirectoryName(head[0].webkitRelativePath);
-
       var fileReader = new FileReader();
       fileReader.readAsText(head[0]);
       fileReader.onload = function (e) {
-        var contents = e.target.result;
-        $("#contents").html(contents);
+        var refHeadFileContents = e.target.result;
+        var lines = refHeadFileContents.split('\n');
+        var refHead = lines[0];
+        var masterIndex = refHead.indexOf('ref: ');
+        if (masterIndex > -1) {
+          var master = refHead.substring(masterIndex + 5);
+          var refHeadMaster = baseDirectory + '.git/' + master;
+          var refHeadMasterFile = filterFiles(someFiles, refHeadMaster);
+          var fileReader2 = new FileReader();
+          fileReader2.readAsText(refHeadMasterFile[0]);
+          fileReader2.onload = function (evt) {
+            var headObject = evt.target.result;
+            $("#contents").html(headObject);
+          }
+        }
       };
     }
   );
