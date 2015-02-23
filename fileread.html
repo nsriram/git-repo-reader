@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script src="zlib.min.js"></script>
+  <script src="jquery-1.11.2.js"></script>
+</head>
+<body>
+<input id="myfiles" multiple type="file">
+<input type="button" value="Read Git File">
+
+<h1>Contents</h1>
+<pre id="contents"></pre>
+</body>
+<script>
+  $("#myfiles").on('change', function () {
+      var fileInput = document.querySelector("#myfiles");
+      var files = fileInput.files;
+      var i = 0;
+      if (files.length > 0) {
+        $("#contents").html('<br/>');
+      }
+      while (i < files.length) {
+        var file = files[i];
+        var fileReader = new FileReader();
+        fileReader.readAsText(file);
+        fileReader.onload = function (e) {
+          var contents = e.target.result;
+          $("#contents").append(contents + '<br/>');
+        };
+        i++;
+      }
+    }
+  );
+</script>
+</html>
