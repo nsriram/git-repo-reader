@@ -5,30 +5,36 @@
   <script src="jquery-1.11.2.js"></script>
 </head>
 <body>
-<input id="myfiles" multiple type="file">
-<input type="button" value="Read Git File">
+<label for="myfiles">Please select a GIT directory</label>
+<input id="myfiles" type="file" webkitdirectory directory multiple>
 
 <h1>Contents</h1>
 <pre id="contents"></pre>
 </body>
 <script>
+  function getBaseDirectoryName(someDirectoryName) {
+    var indexUpto = someDirectoryName.indexOf('.git/HEAD');
+    return someDirectoryName.substring(0, indexUpto);
+  }
   $("#myfiles").on('change', function () {
       var fileInput = document.querySelector("#myfiles");
-      var files = fileInput.files;
-      var i = 0;
-      if (files.length > 0) {
-        $("#contents").html('<br/>');
+      var someFiles = [].slice.call(fileInput.files);
+      var head = someFiles.filter(function (someFile) {
+        return someFile.webkitRelativePath.indexOf('.git/HEAD') > -1;
+      });
+
+      if (head.length !== 1) {
+        alert('Not a Git Directory');
+        return;
       }
-      while (i < files.length) {
-        var file = files[i];
-        var fileReader = new FileReader();
-        fileReader.readAsText(file);
-        fileReader.onload = function (e) {
-          var contents = e.target.result;
-          $("#contents").append(contents + '<br/>');
-        };
-        i++;
-      }
+      var baseDirectory = getBaseDirectoryName(head[0].webkitRelativePath);
+
+      var fileReader = new FileReader();
+      fileReader.readAsText(head[0]);
+      fileReader.onload = function (e) {
+        var contents = e.target.result;
+        $("#contents").html(contents);
+      };
     }
   );
 </script>
