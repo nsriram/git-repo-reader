@@ -1,6 +1,8 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+  <script src="pako.js"></script>
+  <script src="pako_inflate.js"></script>
   <script src="angular.js"></script>
   <script src="angular-file-upload.js"></script>
   <script src="git-repo-reader.js"></script>
@@ -10,7 +12,8 @@
        directory multiple>
 
 <div ng-if="gitDirectory">
-  {{headCommitHash}}
+  <div> {{baseDirectory}}</div>
+  <div> {{headCommitHash}}</div>
 </div>
 </body>
 </html>
