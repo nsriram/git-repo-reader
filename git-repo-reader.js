@@ -1,22 +1,25 @@
+var REF = 'ref: ';
+
 var app = angular.module('gitRepoReader', ['angularFileUpload'])
 
 app.controller('GitRepoReaderCtrl', ['$scope', '$upload', function ($scope, $upload) {
   $scope.gitDirectory = false;
   $scope.baseDirectory = '';
-  $scope.headFile = '';
-  $scope.headFileContent = '';
+  $scope.gitHead = '';
+  $scope.headFileRef = '';
+  $scope.headCommitHash = '';
 
   $scope.readDirectory = function () {
     if (!$scope.files) {
       return;
     }
     $scope.gitDirectory = false;
-    var head = filter($scope.files, '.git/HEAD');
+    var head = filter('.git/HEAD');
     if (head.length > 0) {
       $scope.gitDirectory = true;
-      $scope.headFile = head[0];
-      var selectedGitDirectory = $scope.headFile.webkitRelativePath;
-      $scope.baseDirectory = selectedGitDirectory.substring(0, selectedGitDirectory.indexOf('.git/HEAD'));
+      $scope.gitHead = head[0];
+      var rootDir = $scope.gitHead.webkitRelativePath;
+      $scope.baseDirectory = rootDir.substring(0, rootDir.indexOf('.git/HEAD'));
     }
   };
 
@@ -24,21 +27,37 @@ app.controller('GitRepoReaderCtrl', ['$scope', '$upload', function ($scope, $upl
     if (newValue !== oldValue) {
       var fileReader = new FileReader();
       fileReader.onload = function (onLoadEvent) {
-        $scope.$apply(function () {
-          $scope.headFileContent = onLoadEvent.target.result;
-        });
+        var content = onLoadEvent.target.result;
+        var contentLines = content.split('\n');
+        var refHead = contentLines[0];
+        var masterIndex = refHead.indexOf(REF);
+        if (masterIndex > -1) {
+          var master = refHead.substring(masterIndex + REF.length);
+          var refHeadMaster = $scope.baseDirectory + '.git/' + master;
+          var refHeadMasterFile = filter(refHeadMaster);
+          $scope.$apply(function () {
+            $scope.headFileRef = refHeadMasterFile[0];
+          });
+        }
       };
-      fileReader.readAsText($scope.headFile);
+      fileReader.readAsText($scope.gitHead);
     }
   });
 
-  $scope.$watch('headFileContent', function (newValue, oldValue) {
+  $scope.$watch('headFileRef', function (newValue, oldValue) {
     if (newValue !== oldValue) {
-      console.log($scope.headFileContent);
+      var fileReader = new FileReader();
+      fileReader.onload = function (onLoadEvent) {
+        $scope.$apply(function () {
+          $scope.headCommitHash = onLoadEvent.target.result;
+        });
+      };
+      fileReader.readAsText($scope.headFileRef);
     }
   });
-  function filter(dirFiles, filterCriteria) {
-    return dirFiles.filter(function (dirFile) {
+
+  function filter(filterCriteria) {
+    return $scope.files.filter(function (dirFile) {
       return dirFile.webkitRelativePath.indexOf(filterCriteria) > -1;
     });
   }
