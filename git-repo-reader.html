@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <script src="angular.js"></script>
+  <script src="angular-file-upload.js"></script>
+  <script src="git-repo-reader.js"></script>
+</head>
+<body ng-app="gitRepoReader" ng-controller="GitRepoReaderCtrl">
+<input name="git-dir" type="file" ng-model="files" ng-file-select ng-file-change="readDirectory()" webkitdirectory
+       directory multiple>
+
+<div ng-if="gitDirectory">
+  Git Repo Listing Coming Soon ...
+</div>
+</body>
+</html>

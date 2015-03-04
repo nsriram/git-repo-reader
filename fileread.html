@@ -5,8 +5,8 @@
   <script src="jquery-1.11.2.js"></script>
 </head>
 <body>
-<label for="myfiles">Please select a GIT directory</label>
-<input id="myfiles" type="file" webkitdirectory directory multiple>
+<label for="git-dir">Please select a GIT directory</label>
+<input id="git-dir" type="file" webkitdirectory directory multiple>
 
 <h1>Contents</h1>
 <pre id="contents"></pre>
@@ -23,8 +23,8 @@
     });
   }
 
-  $("#myfiles").on('change', function () {
-      var fileInput = document.querySelector("#myfiles");
+  $("#git-dir").on('change', function () {
+      var fileInput = $("#git-dir")[0];
       var someFiles = [].slice.call(fileInput.files);
       var head = filterFiles(someFiles, '.git/HEAD');
       if (head.length !== 1) {
