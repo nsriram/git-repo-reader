@@ -1,19 +1,22 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-  <script src="pako.js"></script>
-  <script src="pako_inflate.js"></script>
-  <script src="angular.js"></script>
-  <script src="angular-file-upload.js"></script>
-  <script src="git-repo-reader.js"></script>
+    <script src="lib/pako.js"></script>
+    <script src="lib/pako_inflate.js"></script>
+    <script src="lib/angular.js"></script>
+    <script src="lib/angular-file-upload.js"></script>
+    <script src="git-repo-reader.js"></script>
 </head>
 <body ng-app="gitRepoReader" ng-controller="GitRepoReaderCtrl">
-<input name="git-dir" type="file" ng-model="files" ng-file-select ng-file-change="readDirectory()" webkitdirectory
-       directory multiple>
+<input name="git-dir" type="file" webkitdirectory directory multiple
+       ng-file-select
+       ng-model="files"
+       ng-file-change="readDirectory()">
 
 <div ng-if="gitDirectory">
-  <div> {{baseDirectory}}</div>
-  <div> {{headCommitHash}}</div>
+    <div>
+        <pre>{{firstCommit}}</pre>
+    </div>
 </div>
 </body>
 </html>
