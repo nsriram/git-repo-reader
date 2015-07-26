@@ -14,8 +14,8 @@
        ng-file-change="readDirectory()">
 
 <div ng-if="gitDirectory">
-    <div>
-        <pre>{{firstCommit}}</pre>
+    <div ng-repeat="commit in commits">
+        <pre>{{commit}}</pre>
     </div>
 </div>
 </body>
